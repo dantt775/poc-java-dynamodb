@@ -1,0 +1,27 @@
+version: '2.1'
+
+services:
+  localstack:
+    image: localstack/localstack
+    container_name: localstack_dynamodb
+    ports:
+      - "4569:4569"
+    environment:
+      - SERVICES=dynamodb
+      - DEBUG=1
+      - DATA_DIR=/tmp/localstack/data
+      - AWS_ACCESS_KEY_ID=123
+      - AWS_SECRET_ACCESS_KEY=xyz
+    networks:      
+          ls-network:        
+            ipv4_address: 172.28.5.10
+networks:    
+  ls-network:
+    driver: bridge
+    ipam:      
+      driver: default
+      config:
+        - subnet: 172.28.0.0/16
+          ip_range: 172.28.5.0/24
+          gateway: 172.28.5.254 
+

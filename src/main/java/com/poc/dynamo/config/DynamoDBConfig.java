@@ -31,9 +31,4 @@ public class DynamoDBConfig {
     public AwsClientBuilder.EndpointConfiguration endpointConfiguration(){
         return new AwsClientBuilder.EndpointConfiguration("http://172.28.5.10:4569","us-east-1");
     }
-
-    @Bean
-    public DynamoDBMapper dynamoDBMapper(final AmazonDynamoDB amazonDynamoDB){
-        return new DynamoDBMapper(amazonDynamoDB);
-    }
 }
