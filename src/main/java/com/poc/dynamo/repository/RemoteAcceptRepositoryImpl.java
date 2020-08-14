@@ -15,17 +15,14 @@ import java.time.ZoneId;
 @Service
 public class RemoteAcceptRepositoryImpl {
 
-
     private DynamoDBRepository dynamoDBRepository;
 
     public RemoteAcceptRepositoryImpl(DynamoDBRepository dynamoDBRepository) {
         this.dynamoDBRepository = dynamoDBRepository;
     }
 
-
-
-
     public void saveRemoteAccept(RemoteAcceptRequest model){
+
         Item remoteAccept = (new Item()).withPrimaryKey(DynamoConstants.TABLE_FIELD_SOLICITATIONID, model.getSolicitationId())
                 .withString(DynamoConstants.TABLE_FIELD_ORIGIN, model.getOrigin())
                 .withString(DynamoConstants.TABLE_FIELD_CPF, model.getCpf())
@@ -35,19 +32,18 @@ public class RemoteAcceptRepositoryImpl {
                 .withString(DynamoConstants.TABLE_FIELD_COMPANYNAME, model.getCompanyName())
                 .withNumber(DynamoConstants.TABLE_FIELD_TTL, getEpochTime(model.getTtl()));
 
-        PutItemOutcome dynamoResponse = dynamoDBRepository.save(DynamoConstants.TABLE_NAME, remoteAccept);
+        PutItemOutcome dynamoResponse = dynamoDBRepository.save2(DynamoConstants.TABLE_NAME, remoteAccept);
     }
 
+    public Item find(Integer id){
+       Item item =  this.dynamoDBRepository.findItem(DynamoConstants.TABLE_NAME, new GetItemSpec().withPrimaryKey(DynamoConstants.TABLE_FIELD_SOLICITATIONID, id));
+       return item;
+    }
 
 
 
     private long getEpochTime(LocalDate date){
         ZoneId zoneId = ZoneId.of("America/Sao_Paulo"); // or: ZoneId.of("Europe/Oslo");
         return date.atStartOfDay(zoneId).toEpochSecond();
-    }
-
-    public Item find(Integer id){
-       Item item =  this.dynamoDBRepository.findItem(DynamoConstants.TABLE_NAME, new GetItemSpec().withPrimaryKey(DynamoConstants.TABLE_FIELD_SOLICITATIONID, id));
-       return item;
     }
 }

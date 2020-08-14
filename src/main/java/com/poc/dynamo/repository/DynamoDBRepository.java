@@ -1,11 +1,13 @@
 package com.poc.dynamo.repository;
 
-import ch.qos.logback.classic.db.names.TableName;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.document.*;
 import com.amazonaws.services.dynamodbv2.document.spec.GetItemSpec;
+import com.amazonaws.services.dynamodbv2.document.spec.PutItemSpec;
 import com.amazonaws.services.dynamodbv2.document.spec.QuerySpec;
 import com.amazonaws.services.dynamodbv2.document.spec.UpdateItemSpec;
+import com.amazonaws.services.dynamodbv2.xspec.PutItemExpressionSpec;
+import com.poc.dynamo.util.DynamoConstants;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -15,6 +17,18 @@ public class DynamoDBRepository {
 
     public DynamoDBRepository(AmazonDynamoDB amazonDynamoDB){
         this.dynamoDB=new DynamoDB(amazonDynamoDB);
+    }
+
+
+    public PutItemOutcome save2(String tableName, Item item){
+        PutItemSpec putItemSpec = new PutItemSpec()
+                .withItem(item)
+                //prevents from replacing an existing item with the same hasKey, in this case, the field solicitationId
+                .withConditionExpression("attribute_not_exists("+ DynamoConstants.TABLE_FIELD_SOLICITATIONID +")");
+
+
+        Table table = getTable(tableName);
+        return table.putItem(putItemSpec);
     }
 
     public PutItemOutcome save(String tableName, Item newItem){
